@@ -1,0 +1,35 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/todo_list_dev?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    username: root
+    password: admin
+    driverClassName: com.mysql.cj.jdbc.Driver
+  jpa:
+    show-sql: false
+    properties.hibernate:
+      format_sql: false
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+
+--- # develop
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/todo_list_dev?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    username: root
+    password: admin
+    driverClassName: com.mysql.cj.jdbc.Driver
+  jpa:
+    show-sql: false
+    properties.hibernate:
+      format_sql: false
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+  config:
+    activate:
+      on-profile: develop

@@ -1,0 +1,31 @@
+spring:
+  profiles:
+    include:
+      - entity
+      - common
+  servlet.multipart:
+    max-file-size:  20MB
+    max-request-size:  20MB
+  main:
+    allow-bean-definition-overriding: true
+
+app.security.jwtSecret: AnnaJpaQueryDsl
+app.security.jwtExpirationMills: 1296000000 # token 수명 15일
+
+mapping.url: "http://localhost:3000"
+front.url: http://localhost:3000
+
+
+--- # develop
+spring:
+  devtools:
+    livereload:
+      enabled: true
+  config:
+    activate:
+      on-profile: develop
+
+logging:
+  level:
+    root: ERROR
+    p6spy: info

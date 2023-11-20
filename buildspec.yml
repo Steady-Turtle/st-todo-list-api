@@ -1,0 +1,18 @@
+version: 0.2
+phases:
+  build:
+    commands:
+      - echo Build Starting on `date`
+      - chmod +x ./gradlew
+      - ./gradlew clean
+      - ./gradlew userCombineJar
+  post_build:
+    commands:
+      - echo $(basename ./user-api/build/libs/user-api-0.0.1-SNAPSHOT.jar)
+      - pwd
+      - cp -r ./user-api/build/resources/main/.platform ./user-api/build/libs/
+      - cp -r ./user-api/build/resources/main/.ebextensions ./user-api/build/libs/
+artifacts:
+  files:
+    - '**/*'
+  base-directory: user-api/build/libs

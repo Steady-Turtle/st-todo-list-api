@@ -1,0 +1,107 @@
+plugins {
+    id 'org.springframework.boot' version '2.7.7'
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id 'org.asciidoctor.convert' version '1.5.8'
+    id 'java'
+}
+
+group = 'com.example.anna.api'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+    developmentOnly
+    runtimeClasspath {
+        extendsFrom developmentOnly
+    }
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    set('snippetsDir', file("build/generated-snippets"))
+    set('springBootAdminVersion', "2.2.1")
+}
+
+dependencies {
+    // Include
+    compile project(':entity')
+    compile project(':common')
+
+    // Spring Boot
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'de.codecentric:spring-boot-admin-starter-server'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+
+    // Spring Security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // JWT
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+
+    // Swagger
+    implementation("org.springdoc:springdoc-openapi-ui:1.6.9")
+
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "de.codecentric:spring-boot-admin-dependencies:${springBootAdminVersion}"
+    }
+}
+
+
+task userCombineJar(type: Exec, dependsOn: bootJar)
+
+bootJar{
+    enabled = true
+}
+
+jar {
+    exclude(".platform/")
+    exclude(".ebextensions/")
+}
+
+userCombineJar {
+    workingDir "$buildDir"
+    if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+        commandLine 'cmd', '/c', "jar uf $jar.archivePath -C $processResources.destinationDir .platform"
+        commandLine 'cmd', '/c', "jar uf $jar.archivePath -C $processResources.destinationDir .ebextensions"
+    } else {
+        commandLine 'sh', '-c', "jar uf $jar.archivePath -C $processResources.destinationDir .platform"
+        commandLine 'sh', '-c', "jar uf $jar.archivePath -C $processResources.destinationDir .ebextensions"
+    }
+    standardOutput = new ByteArrayOutputStream()
+
+    doLast() {
+        println standardOutput
+    }
+}
+
+test {
+    outputs.dir snippetsDir
+    useJUnitPlatform()
+}
+
+asciidoctor {
+    inputs.dir snippetsDir
+    dependsOn test
+}
